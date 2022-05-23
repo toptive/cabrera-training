@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import Router from 'next/router';
+import Swal from 'sweetalert2';
 
 /* utils */
 import { absoluteUrl, getAppCookies } from '../../middleware/utils';
@@ -99,6 +101,34 @@ function Post(props) {
 
     /* validation handler */
     validationHandler(stateFormData, e);
+  }
+
+  function deletePost() {
+    Swal.fire({
+      title: 'Do you want to delete the post?',
+      confirmButtonColor: '#CACBCB',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      denyButtonText: `Don't delete`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        fetch(`${baseApiUrl}/post/${post.data.id}`, {
+          method: 'DELETE',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            authorization: token || '',
+          },
+        });
+        Swal.fire('Post Deleted!', '', 'success');
+        return (Router.back())
+      }
+    })
+  }
+  function editPost(){
+    
   }
 
   function validationHandler(states, e) {
@@ -253,6 +283,9 @@ function Post(props) {
         <p>{post.data.content}</p>
         <hr />
         By: {post.data.user.firstName || ''} {post.data.user.lastName || ''}
+        <br />
+        <button className='btn btn-block' onClick={deletePost}>Delete</button>
+        <button className='btn btn-block' onClick={editPost}>Edit</button>
       </div>
     ) : (
       <div className="container">
