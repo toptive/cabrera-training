@@ -153,6 +153,7 @@ export async function getServerSideProps(context) {
   });
 
   const posts = await postsApi.json();
+  
 
   return {
     props: {

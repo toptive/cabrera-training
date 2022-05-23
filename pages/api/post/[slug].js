@@ -43,6 +43,16 @@ const handler = nextConnect()
       data: newPost,
     });
   })
+  .delete(async (req, res) => {
+    const {slug: id} = req.query;
+    const postDeleted = await models.posts.destroy({
+      where: {id}
+    });
+    return res.status(200).json({
+      message: 'success',
+      body: postDeleted
+    });
+  })
   // Put method
   .put(async (req, res) => {
     res.end('method - put');
