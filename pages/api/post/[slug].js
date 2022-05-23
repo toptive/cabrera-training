@@ -45,6 +45,14 @@ const handler = nextConnect()
   })
   .delete(async (req, res) => {
     const {slug: id} = req.query;
+    const { user } = req;
+    //Check if user = userId post
+    if (id !== user) {
+      return res.status(400).json({
+        status: 'error',
+        error: 'Only the user can delete the post',
+      });
+    }
     const postDeleted = await models.posts.destroy({
       where: {id}
     });
