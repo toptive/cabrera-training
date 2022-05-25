@@ -253,6 +253,40 @@ function Job(props) {
       </>
     );
   }
+  function deleteJob() {
+    Swal.fire({
+      title: 'Do you want to delete the post?',
+      confirmButtonColor: '#CACBCB',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      denyButtonText: `Don't delete`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        fetch(`${baseApiUrl}/post/${post.data.id}`, {
+          method: 'DELETE',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            authorization: token || '',
+          },
+        }).then((response) => {
+          if (response.status == 400) {
+            Swal.fire({
+              title: 'Only the user can delete the post',
+              icon: 'info',
+              confirmButtonColor: '#CACBCB',
+              confirmButtonText: 'OK',
+            })
+          } else {
+            Swal.fire('Post Deleted!', '', 'success');
+            return (Router.back())
+          }
+        });
+      }
+    })
+  }
 
   function renderJobList() {
     return (

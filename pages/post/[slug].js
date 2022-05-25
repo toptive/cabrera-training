@@ -121,14 +121,24 @@ function Post(props) {
             'Content-Type': 'application/json',
             authorization: token || '',
           },
+        }).then((response) => {
+          if (response.status == 400) {
+            Swal.fire({
+              title: 'Only the user can delete the post',
+              icon: 'info',
+              confirmButtonColor: '#CACBCB',
+              confirmButtonText: 'OK',
+            })
+          } else {
+            Swal.fire('Post Deleted!', '', 'success');
+            return (Router.back())
+          }
         });
-        Swal.fire('Post Deleted!', '', 'success');
-        return (Router.back())
       }
     })
   }
-  function editPost(){
-    
+  function editPost() {
+
   }
 
   function validationHandler(states, e) {

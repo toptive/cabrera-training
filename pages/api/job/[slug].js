@@ -65,6 +65,25 @@ const handler = nextConnect()
       data: newJob,
     });
   })
+  // Delete method
+  .delete(async (req, res) => {
+    const {slug: id} = req.query;
+    const { user } = req;
+    //Check if user = userId job
+    if (id !== user) {
+      return res.status(400).json({
+        status: 'error',
+        error: 'Only the user can delete the job',
+      });
+    }
+    const jobDeleted = await models.jobs.destroy({
+      where: {id}
+    });
+    return res.status(200).json({
+      message: 'success',
+      body: jobDeleted
+    });
+  })
   // Put method
   .put(async (req, res) => {
     res.end('method - put');
