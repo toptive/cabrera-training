@@ -3,6 +3,7 @@ import middleware from '../../../middleware/auth';
 const models = require('../../../db/models/index');
 
 const handler = nextConnect()
+
   // Middleware
   .use(middleware)
   // Get method
@@ -43,23 +44,33 @@ const handler = nextConnect()
       data: newPost,
     });
   })
+  // Delete method
   .delete(async (req, res) => {
-    const {slug: id} = req.query;
+    const { slug } = req.query;
+    const userIdPost = await models.posts.findAll({
+      where: {
+        id: slug,
+      },
+      attributes: ['userId'],
+    }).then(function (response) {
+      return response[0].dataValues.userId;
+    });
     const { user } = req;
     //Check if user = userId post
-    if (id !== user) {
+    if (userIdPost !== user.id) {
       return res.status(400).json({
         status: 'error',
         error: 'Only the user can delete the post',
       });
+    } else {
+      const postDeleted = await models.posts.destroy({
+        where: { id: slug }
+      });
+      return res.status(200).json({
+        message: 'success',
+        body: postDeleted
+      });
     }
-    const postDeleted = await models.posts.destroy({
-      where: {id}
-    });
-    return res.status(200).json({
-      message: 'success',
-      body: postDeleted
-    });
   })
   // Put method
   .put(async (req, res) => {
