@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Router from 'next/router';
 import { useRouter } from 'next/router';
+import Swal from 'sweetalert2';
+
 
 /* utils */
 import { absoluteUrl, getAppCookies } from '../../middleware/utils';
@@ -255,7 +258,7 @@ function Job(props) {
   }
   function deleteJob() {
     Swal.fire({
-      title: 'Do you want to delete the post?',
+      title: 'Do you want to delete the job?',
       confirmButtonColor: '#CACBCB',
       showDenyButton: true,
       showCancelButton: true,
@@ -264,7 +267,7 @@ function Job(props) {
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        fetch(`${baseApiUrl}/post/${post.data.id}`, {
+        fetch(`${baseApiUrl}/job/${job.data.id}`, {
           method: 'DELETE',
           headers: {
             Accept: 'application/json',
@@ -274,19 +277,21 @@ function Job(props) {
         }).then((response) => {
           if (response.status == 400) {
             Swal.fire({
-              title: 'Only the user can delete the post',
+              title: 'Only the user can delete the job',
               icon: 'info',
               confirmButtonColor: '#CACBCB',
               confirmButtonText: 'OK',
             })
           } else {
-            Swal.fire('Post Deleted!', '', 'success');
+            Swal.fire('Job Deleted!', '', 'success');
             return (Router.back())
           }
         });
       }
     })
   }
+
+  function editJob() {}
 
   function renderJobList() {
     return (
@@ -322,6 +327,8 @@ function Job(props) {
         <p>Limit :{job.data.dateLimit}</p>
         <hr />
         By: {job.data.user.firstName || ''} {job.data.user.lastName || ''}
+        <button className='btn btn-block' onClick={deleteJob}>Delete</button>
+        <button className='btn btn-block' onClick={editJob}>Edit</button>
       </div>
     );
   }
