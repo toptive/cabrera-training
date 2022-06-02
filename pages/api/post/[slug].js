@@ -1,8 +1,11 @@
 import nextConnect from 'next-connect';
+import getUserId from '../../../functions/getUserId';
 import middleware from '../../../middleware/auth';
 const models = require('../../../db/models/index');
 
+const model = 'posts';
 const handler = nextConnect()
+
 
   // Middleware
   .use(middleware)
@@ -47,14 +50,7 @@ const handler = nextConnect()
   // Delete method
   .delete(async (req, res) => {
     const { slug } = req.query;
-    const userIdPost = await models.posts.findAll({
-      where: {
-        id: slug,
-      },
-      attributes: ['userId'],
-    }).then(function (response) {
-      return response[0].dataValues.userId;
-    });
+    const userIdPost = await getUserId(slug, model);
     const { user } = req;
     //Check if user = userId post
     if (userIdPost !== user.id) {
