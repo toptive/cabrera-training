@@ -70,7 +70,25 @@ const handler = nextConnect()
   })
   // Put method
   .put(async (req, res) => {
-    res.end('method - put');
+    const { slug } = req.query;
+    const userIdPost = await getUserId(slug, model)
+    const { user } = req;
+    if (userIdPost !== user.id) {
+      return res.status(400).json({
+        status: 'error',
+        error: 'Only the user can delete the post',
+      });
+    } else {
+      const { title, content } = body;
+      const postEdit = await models.posts.update({
+        title, content,
+        where: { id: slug }
+      });
+      return res.status(200).json({
+        message: 'success',
+        body: postEdit
+      });
+    }
   })
   // Patch method
   .patch(async (req, res) => {
