@@ -138,7 +138,7 @@ function Post(props) {
     })
   }
   function editPost() {
-
+    console.log();
   }
 
   function validationHandler(states, e) {
@@ -293,6 +293,7 @@ function Post(props) {
         <p>{post.data.content}</p>
         <hr />
         By: {post.data.user.firstName || ''} {post.data.user.lastName || ''}
+        userId: {}
         <br />
         <button className='btn btn-block' onClick={deletePost}>Delete</button>
         <button className='btn btn-block' onClick={editPost}>Edit</button>
