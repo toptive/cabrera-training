@@ -108,7 +108,7 @@ function Post(props) {
       title: 'Do you want to delete the post?',
       confirmButtonColor: '#CACBCB',
       showDenyButton: true,
-      showCancelButton: true,
+      //showCancelButton: true,
       confirmButtonText: 'Delete',
       denyButtonText: `Don't delete`,
     }).then((result) => {
@@ -138,7 +138,20 @@ function Post(props) {
     })
   }
   function editPost() {
-    console.log();
+    Swal.fire({
+      title: 'Do you want to edit the post?',
+      confirmButtonColor: '#CACBCB',
+      showDenyButton: true,
+      //showCancelButton: true,
+      confirmButtonText: 'Edit',
+      denyButtonText: `Don't edit`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        router.push({
+          pathname:`/post/edit/${post.data.slug}`})
+      }
+    })
   }
 
   function validationHandler(states, e) {
@@ -293,7 +306,6 @@ function Post(props) {
         <p>{post.data.content}</p>
         <hr />
         By: {post.data.user.firstName || ''} {post.data.user.lastName || ''}
-        userId: {}
         <br />
         <button className='btn btn-block' onClick={deletePost}>Delete</button>
         <button className='btn btn-block' onClick={editPost}>Edit</button>
