@@ -27,7 +27,7 @@ function FormEdit(props) {
             placeholder="Post Title"
             onChange={onChange}
             readOnly={loading && false}
-            //value={stateFormData.title.value}
+            value={stateFormData.title.value}
           />
           {stateFormError.title && (
             <span className="warning">{stateFormError.title.hint}</span>
@@ -43,7 +43,7 @@ function FormEdit(props) {
             placeholder="Post Content"
             onChange={onChange}
             readOnly={loading && false}
-            //value={stateFormData.content.value}
+            value={stateFormData.content.value}
           />
           {stateFormError.content && (
             <span className="warning">{stateFormError.content.hint}</span>
