@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter, Router } from 'next/router';
 import Link from 'next/link';
+import Swal from 'sweetalert2';
 
 import { absoluteUrl, getAppCookies } from "../../../middleware/utils";
 import Layout from "../../../components/layout/Layout";
@@ -62,17 +63,25 @@ function EditPost(props) {
         if (isValid) {
             // Call an external API endpoint to get posts.
             // You can use any data fetching library}
-
+            
             setLoading(!loading);
-            console.log("holaaaaaaaaaaa")
-            alert("HOLAAAA")
+            const postApi = await fetch(`${baseApiUrl}/post/${post.data.id}`, {
+                method: 'PUT',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    authorization: token || '',
+                },
+            });
+            const result = await postApi.json();
+            console.log(result)
             /*
                 
             */
             setLoading(false);
-            router.push({
-                pathname: '/post',
-            });
+            // router.push({
+            //     pathname: '/post',
+            // });
         }
     }
 
