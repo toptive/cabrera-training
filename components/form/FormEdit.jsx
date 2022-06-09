@@ -9,7 +9,7 @@ function FormEdit(props) {
       stateFormMessage,
     } = props;
     return (
-      <form onSubmit={onSubmit} className="card" method="PUT">
+      <form onSubmit={onSubmit} className="card" method="POST">
         <div className="form-group">
           <h2>Edit Post</h2>
           <hr />

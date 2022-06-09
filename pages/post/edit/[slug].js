@@ -63,7 +63,7 @@ function EditPost(props) {
         if (isValid) {
             // Call an external API endpoint to get posts.
             // You can use any data fetching library}
-            
+
             setLoading(!loading);
             const postApi = await fetch(`${baseApiUrl}/post/${post.data.id}`, {
                 method: 'PUT',
@@ -72,16 +72,24 @@ function EditPost(props) {
                     'Content-Type': 'application/json',
                     authorization: token || '',
                 },
+                body: JSON.stringify(data)
             });
             const result = await postApi.json();
-            console.log(result)
-            /*
-                
-            */
+
+            if (result.message == 'success') {
+                Swal.fire('Post Edited!', '', 'success');
+                router.push({
+                    pathname: '/post',
+                });
+            } else {
+                Swal.fire({
+                    title: 'Only the user can edit the post',
+                    icon: 'info',
+                    confirmButtonColor: '#CACBCB',
+                    confirmButtonText: 'OK',
+                })
+            }
             setLoading(false);
-            // router.push({
-            //     pathname: '/post',
-            // });
         }
     }
 

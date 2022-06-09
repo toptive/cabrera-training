@@ -71,7 +71,6 @@ const handler = nextConnect()
   // Put method
   .put(async (req, res) => {
     const { slug } = req.query;
-    const id = slug;
     const user = req.user;
     const userIdPost = await getUserId(slug, model)
     if (userIdPost !== user.id) {
@@ -81,7 +80,7 @@ const handler = nextConnect()
       });
     } else {
       const postEdit = await models.posts.update(req.body, {
-        where: { id }
+        where: { id: slug },
       });
       return res.status(200).json({
         message: 'success',
