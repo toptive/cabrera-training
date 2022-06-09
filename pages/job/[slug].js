@@ -261,7 +261,7 @@ function Job(props) {
       title: 'Do you want to delete the job?',
       confirmButtonColor: '#CACBCB',
       showDenyButton: true,
-      showCancelButton: true,
+      //showCancelButton: true,
       confirmButtonText: 'Delete',
       denyButtonText: `Don't delete`,
     }).then((result) => {
@@ -291,7 +291,23 @@ function Job(props) {
     })
   }
 
-  function editJob() {}
+  function editJob() {
+    Swal.fire({
+      title: 'Do you want to edit the job?',
+      confirmButtonColor: '#CACBCB',
+      showDenyButton: true,
+      //showCancelButton: true,
+      confirmButtonText: 'Edit',
+      denyButtonText: `Don't edit`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        router.push({
+          pathname: `/job/edit/${job.data.slug}`
+        })
+      }
+    })
+  }
 
   function renderJobList() {
     return (
