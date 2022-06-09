@@ -90,7 +90,23 @@ const handler = nextConnect()
   })
   // Put method
   .put(async (req, res) => {
-    res.end('method - put');
+    const { slug } = req.query;
+    const user = req.user;
+    const userIdJob = await getUserId(slug, model)
+    if (userIdJob !== user.id) {
+      return res.status(400).json({
+        status: 'error',
+        error: 'Only the user can edit the job',
+      });
+    } else {
+      const jobEdit = await models.jobs.update(req.body, {
+        where: { id: slug },
+      });
+      return res.status(200).json({
+        message: 'success',
+        body: jobEdit
+      });
+    }
   })
   // Patch method
   .patch(async (req, res) => {
