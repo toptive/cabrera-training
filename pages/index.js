@@ -51,6 +51,13 @@ export default function Home(props) {
                 <p>Job Post collection from users of this web application.</p>
               </a>
             </Link>
+
+            <Link href="/event">
+              <a className="card">
+                <h3>Events &rarr;</h3>
+                <p>Events collection from users of this web application.</p>
+              </a>
+            </Link>
           </div>
         </main>
       </div>
