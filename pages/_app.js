@@ -2,6 +2,8 @@ import Head from 'next/head';
 import Router from 'next/router';
 import { getAppCookies, verifyToken } from '../middleware/utils';
 import NProgress from 'nprogress';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 
 NProgress.configure({ showSpinner: false });
 Router.events.on('routeChangeStart', url => {
