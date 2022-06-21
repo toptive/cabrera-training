@@ -148,6 +148,13 @@ export default function Layout({
           border-left: 0;
           border-color: #ffc107;
         }
+        .calendar {
+          position:absolute;
+          top: 50px;
+          right:50px;
+          width:700px;
+          background-color:#b0e0e6;
+        }
         .home {
           overflow-x: hidden;
         }

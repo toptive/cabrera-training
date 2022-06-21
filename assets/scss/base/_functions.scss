@@ -13,3 +13,6 @@
 @import "../base/placeholder";
 @import "../base/utility";
 @import "../base/base";
+
+@import 'react-big-calendar/lib/sass/styles';
+@import 'react-big-calendar/lib/addons/dragAndDrop/styles'; // if using DnD
