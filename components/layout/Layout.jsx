@@ -149,11 +149,9 @@ export default function Layout({
           border-color: #ffc107;
         }
         .calendar {
-          position:absolute;
-          top: 50px;
-          right:50px;
-          width:700px;
-          background-color:#b0e0e6;
+          margin-left: auto;
+          margin-right: auto;
+          background-color:#D8D7D6;
         }
         .home {
           overflow-x: hidden;
