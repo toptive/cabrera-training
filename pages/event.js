@@ -11,15 +11,37 @@ import { absoluteUrl, getAppCookies } from '../middleware/utils';
 /* components */
 import Layout from '../components/layout/Layout';
 import UserNav from '../components/navigation/User';
+import { clearConfigCache } from 'prettier';
 
 const localizer = momentLocalizer(moment);
 
 
 function Event(props) {
     const router = useRouter();
-
     const { origin, events, user } = props;
     const { baseApiUrl } = props;
+
+    //Define all events
+    let allEvents = events.data;
+    
+    
+    //Define my events
+    let myEvents = [];
+    if (user === undefined) {
+        Router.push({
+            pathname: '/user/login'
+        });
+    } else {
+        myEvents = events.data.map((event) => {
+            if (user.id === event.user.id && event.title) {
+                return {
+                    title: event.title,
+                    dateInit: new Date(Date.parse(event.dateInit)),
+                    dateEnd: new Date(Date.parse(event.dateEnd))
+                }
+            }
+        })
+    }
     return (
         <Layout
             title="Next.js with Sequelize | Events Page"
@@ -41,20 +63,13 @@ function Event(props) {
             <Calendar
                 className='calendar'
                 localizer={localizer}
-                events={[{
-                    'title': 'My event',
-                    'allDay': false,
-                    'start': new Date(2022, 5, 21, 10, 0), // 10.00 AM Y-M-D-IH-FH
-                    'end': new Date(2022, 5, 21, 16, 0), // 2.00 PM 
-                }]}
-                view='week'
-                views={['week']}
-                startAccessor="start"
-                endAccessor="end"
+                defaultView='month'
+                events={myEvents}
+                startAccessor={"dateInit"}
+                endAccessor={"dateEnd"}
                 style={{ height: 440, width: 1200 }}
             />
         </Layout>
-
 
     )
 }
