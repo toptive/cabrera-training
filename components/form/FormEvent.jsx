@@ -50,16 +50,32 @@ function FormEvent(props) {
           )}
         </div>
         <div className="form-group">
-          <label htmlFor="date">Day</label>
+          <label htmlFor="date">Date Init</label>
           <input
             className="form-control"
             type="date"
-            id="day"
-            name="day"
-            placeholder="Event Day"
+            id="dateInit"
+            name="dateInit"
+            placeholder="Date Init"
             onChange={onChange}
             readOnly={loading && false}
-            value={stateFormData.day.value}
+            value={stateFormData.dateInit.value}
+          />
+          {stateFormError.title && (
+            <span className="warning">{stateFormError.title.hint}</span>
+          )}
+        </div>
+        <div className="form-group">
+          <label htmlFor="date">Date End</label>
+          <input
+            className="form-control"
+            type="date"
+            id="dateEnd"
+            name="dateEnd"
+            placeholder="Date End"
+            onChange={onChange}
+            readOnly={loading && false}
+            value={stateFormData.dateEnd.value}
           />
           {stateFormError.title && (
             <span className="warning">{stateFormError.title.hint}</span>
