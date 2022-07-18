@@ -18,6 +18,14 @@ async function getUserId(slug, model) {
             attributes: ['userId'],
         })
     }
+    if (model == 'events') {
+        userID = await models.posts.findAll({
+            where: {
+                id: slug,
+            },
+            attributes: ['userId'],
+        })
+    }
     const response = await userID;
     return response[0].dataValues.userId;
 };

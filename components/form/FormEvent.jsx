@@ -22,7 +22,7 @@ function FormEvent(props) {
           <input
             className="form-control"
             type="text"
-            id="title"
+            id="text"
             name="title"
             placeholder="Event Title"
             onChange={onChange}
@@ -45,8 +45,8 @@ function FormEvent(props) {
             readOnly={loading && false}
             value={stateFormData.description.value}
           />
-          {stateFormError.content && (
-            <span className="warning">{stateFormError.content.hint}</span>
+          {stateFormError.description && (
+            <span className="warning">{stateFormError.description.hint}</span>
           )}
         </div>
         <div className="form-group">
@@ -61,8 +61,8 @@ function FormEvent(props) {
             readOnly={loading && false}
             value={stateFormData.dateInit.value}
           />
-          {stateFormError.title && (
-            <span className="warning">{stateFormError.title.hint}</span>
+          {stateFormError.dateInit && (
+            <span className="warning">{stateFormError.dateInit.hint}</span>
           )}
         </div>
         <div className="form-group">
@@ -77,8 +77,8 @@ function FormEvent(props) {
             readOnly={loading && false}
             value={stateFormData.dateEnd.value}
           />
-          {stateFormError.title && (
-            <span className="warning">{stateFormError.title.hint}</span>
+          {stateFormError.dateEnd && (
+            <span className="warning">{stateFormError.dateEnd.hint}</span>
           )}
         </div>
         <div>

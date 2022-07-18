@@ -90,6 +90,15 @@ function Event(props) {
         /* validation handler */
         const isValid = validationHandler(stateFormData);
 
+        if (data.dateEnd < data.dateInit) {
+            Swal.fire({
+                title: 'Date init must be less tha Date End',
+                confirmButtonColor: '#CACBCB',
+                confirmButtonText: 'Accept',
+            });
+            return;
+        }
+
         if (isValid) {
             // Call an external API endpoint to get posts.
             // You can use any data fetching library
@@ -102,9 +111,11 @@ function Event(props) {
                     authorization: token || '',
                 },
                 body: JSON.stringify(data),
+
             });
 
             let result = await eventApi.json();
+            console.log(result);
             if (
                 result.status === 'success' &&
                 result.message &&
@@ -312,6 +323,7 @@ function Event(props) {
     */
 
     function renderEventList() {
+        console.log(event.data.title);
         return (
             <div className="card">
                 <Link
@@ -339,14 +351,13 @@ function Event(props) {
                         Posted: {event.data.createdAt}
                     </small>
                 </h2>
-                <p>{event.data.content}</p>
-                <p>Email: {event.data.emailTo}</p>
-                <p>Report to: {event.data.reportManager}</p>
-                <p>Limit :{event.data.dateLimit}</p>
+                <p>{event.data.description}</p>
+                <p>Date Init: {event.data.dateInit}</p>
+                <p>Date End: {event.data.dateEnd}</p>
                 <hr />
                 By: {event.data.user.firstName || ''} {event.data.user.lastName || ''}
-                <button className='btn btn-block' onClick={deleteEvent}>Delete</button>
-                <button className='btn btn-block' onClick={editEvent}>Edit</button>
+                <button className='btn btn-block' >Delete</button>
+                <button className='btn btn-block' >Edit</button>
             </div>
         );
     }
