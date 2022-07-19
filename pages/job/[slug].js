@@ -284,7 +284,8 @@ function Job(props) {
             })
           } else {
             Swal.fire('Job Deleted!', '', 'success');
-            return (Router.back())
+            router.push({
+              pathname:`/job`})
           }
         });
       }

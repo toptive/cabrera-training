@@ -6,69 +6,71 @@ import Swal from 'sweetalert2';
 
 
 /* utils */
-import { absoluteUrl, getAppCookies } from '../../middleware/utils';
+import { absoluteUrl, getAppCookies } from "../../../middleware/utils";
 
 /* components */
-import Layout from '../../components/layout/Layout';
-import FormEvent from '../../components/form/FormEvent';
+import Layout from "../../../components/layout/Layout";
+import FormEditJob from '../../../components/form/FormEditJob';
 
-/* post schemas */
-const FORM_DATA_EVENT = {
-    title: {
-        value: '',
-        label: 'Title',
-        min: 10,
-        max: 36,
-        required: true,
-        validator: {
-            regEx: /^[a-z\sA-Z0-9\W\w]+$/,
-            error: 'Please insert valid Title',
-        },
-    },
-    description: {
-        value: '',
-        label: 'Description',
-        min: 6,
-        max: 1500,
-        required: true,
-        validator: {
-            regEx: /^[a-z\sA-Z0-9\W\w]+$/,
-            error: 'Please insert valid Content',
-        },
-    },
-    dateInit: {
-        value: '',
-        label: 'Date Init',
-        min: 6,
-        max: 24,
-        required: true,
-        validator: {
-            regEx: /^[a-z\sA-Z0-9\W\w]+$/,
-            error: 'Please select a valid Date init',
-        },
-    },
-    dateEnd: {
-        value: '',
-        label: 'Date End',
-        min: 6,
-        max: 24,
-        required: true,
-        validator: {
-            regEx: /^[a-z\sA-Z0-9\W\w]+$/,
-            error: 'Please insert valid Date end',
-        },
-    },
-};
 
-function Event(props) {
+
+function EditJob(props) {
     const router = useRouter();
 
-    const { origin, event, token } = props;
-
+    const { origin, job, token } = props;
     const { baseApiUrl } = props;
-    const [loading, setLoading] = useState(false);
 
-    const [stateFormData, setStateFormData] = useState(FORM_DATA_EVENT);
+    /* post schemas */
+    const FORM_DATA_JOB = {
+        title: {
+            value: job.data.title,
+            label: 'Title',
+            min: 10,
+            max: 36,
+            required: true,
+            validator: {
+                regEx: /^[a-z\sA-Z0-9\W\w]+$/,
+                error: 'Please insert valid Title',
+            },
+        },
+        content: {
+            value: job.data.content,
+            label: 'Content',
+            min: 6,
+            max: 1500,
+            required: true,
+            validator: {
+                regEx: /^[a-z\sA-Z0-9\W\w]+$/,
+                error: 'Please insert valid Content',
+            },
+        },
+        reportManager: {
+            value: job.data.reportManager,
+            label: 'Content',
+            min: 6,
+            max: 1500,
+            required: true,
+            validator: {
+                regEx: /^[a-z\sA-Z0-9\W\w]+$/,
+                error: 'Please insert valid Report Manager',
+            },
+        },
+        dateLimit: {
+            value: job.data.dateLimit,
+            label: 'Date',
+            min: 6,
+            max: 24,
+            required: true,
+            validator: {
+                regEx: /^[a-z\sA-Z0-9\W\w]+$/,
+                error: 'Please insert valid Date limit',
+            },
+        },
+    };
+
+
+    const [loading, setLoading] = useState(false);
+    const [stateFormData, setStateFormData] = useState(FORM_DATA_JOB);
     const [stateFormError, setStateFormError] = useState([]);
     const [stateFormMessage, setStateFormMessage] = useState({});
     const [stateFormValid, setStateFormValid] = useState(false);
@@ -80,53 +82,43 @@ function Event(props) {
 
         /* title */
         data = { ...data, title: data.title.value || '' };
-        /* description */
-        data = { ...data, description: data.description.value || '' };
-        /* dateInit */
-        data = { ...data, dateInit: data.dateInit.value || '' };
-        /* dateEnd */
-        data = { ...data, dateEnd: data.dateEnd.value || '' };
+        /* content */
+        data = { ...data, content: data.content.value || '' };
+        /* reportManager */
+        data = { ...data, reportManager: data.reportManager.value || '' };
+        /* dateLimit */
+        data = { ...data, dateLimit: data.dateLimit.value || '' };
 
         /* validation handler */
         const isValid = validationHandler(stateFormData);
-
-        if (data.dateEnd < data.dateInit) {
-            Swal.fire({
-                title: 'Date init must be less tha Date End',
-                confirmButtonColor: '#CACBCB',
-                confirmButtonText: 'Accept',
-            });
-            return;
-        }
 
         if (isValid) {
             // Call an external API endpoint to get posts.
             // You can use any data fetching library
             setLoading(!loading);
-            const eventApi = await fetch(`${baseApiUrl}/event/[slug]`, {
-                method: 'POST',
+            const jobApi = await fetch(`${baseApiUrl}/job/${job.data.id}`, {
+                method: 'PUT',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                     authorization: token || '',
                 },
-                body: JSON.stringify(data),
-
+                body: JSON.stringify(data)
             });
+            const result = await jobApi.json();
 
-            let result = await eventApi.json();
-            console.log(result);
-            if (
-                result.status === 'success' &&
-                result.message &&
-                result.message === 'done' &&
-                result.data
-            ) {
+            if (result.message == 'success') {
+                Swal.fire('Job Edited!', '', 'success');
                 router.push({
-                    pathname: result.data.slug ? `/event/${result.data.slug}` : '/event',
+                    pathname: '/job',
                 });
             } else {
-                setStateFormMessage(result);
+                Swal.fire({
+                    title: 'Only the user can edit the job',
+                    icon: 'info',
+                    confirmButtonColor: '#CACBCB',
+                    confirmButtonText: 'OK',
+                })
             }
             setLoading(false);
         }
@@ -245,17 +237,17 @@ function Event(props) {
         return isValid;
     }
 
-    function renderEventForm() {
+    function renderJobForm() {
         return (
             <>
                 <Link
                     href={{
-                        pathname: '/event',
+                        pathname: `/job/${job.data.slug}`,
                     }}
                 >
                     <a>&larr; Back</a>
                 </Link>
-                <FormEvent
+                <FormEditJob
                     onSubmit={onSubmitHandler}
                     onChange={onChangeHandler}
                     loading={loading}
@@ -268,109 +260,16 @@ function Event(props) {
         );
     }
 
-    function deleteEvent() {
-        Swal.fire({
-            title: 'Do you want to delete the event?',
-            confirmButtonColor: '#CACBCB',
-            showDenyButton: true,
-            confirmButtonText: 'Delete',
-            denyButtonText: `Don't delete`,
-        }).then((result) => {
-            // Read more about isConfirmed, isDenied below
-            if (result.isConfirmed) {
-                fetch(`${baseApiUrl}/event/${event.data.id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                        authorization: token || '',
-                    },
-                }).then((response) => {
-                    if (response.status == 400) {
-                        Swal.fire({
-                            title: 'Only the user can delete the event',
-                            icon: 'info',
-                            confirmButtonColor: '#CACBCB',
-                            confirmButtonText: 'OK',
-                        })
-                    } else {
-                        Swal.fire('Event Deleted!', '', 'success');
-                        router.push({
-                            pathname:`/event`})
-                    }
-                });
-            }
-        })
-    }
-    /* 
-      function editEvent() {
-        Swal.fire({
-          title: 'Do you want to edit the event?',
-          confirmButtonColor: '#CACBCB',
-          showDenyButton: true,
-          //showCancelButton: true,
-          confirmButtonText: 'Edit',
-          denyButtonText: `Don't edit`,
-        }).then((result) => {
-          // Read more about isConfirmed, isDenied below
-          if (result.isConfirmed) {
-            router.push({
-              pathname: `/event/edit/${event.data.slug}`
-            })
-          }
-        })
-      }
-      */
-
-    function renderEventList() {
-        return (
-            <div className="card">
-                <Link
-                    href={{
-                        pathname: '/event',
-                    }}
-                >
-                    <a>&larr; Back</a>
-                </Link>
-                <h2
-                    className="sub-title"
-                    style={{
-                        display: 'block',
-                        marginTop: '.75rem',
-                    }}
-                >
-                    {event.data.title}
-                    <small
-                        style={{
-                            display: 'block',
-                            fontWeight: 'normal',
-                            marginTop: '.75rem',
-                        }}
-                    >
-                        Posted: {event.data.createdAt}
-                    </small>
-                </h2>
-                <p>{event.data.description}</p>
-                <p>Date Init: {event.data.dateInit}</p>
-                <p>Date End: {event.data.dateEnd}</p>
-                <hr />
-                By: {event.data.user.firstName || ''} {event.data.user.lastName || ''}
-                <button className='btn btn-block' onClick={deleteEvent}>Delete</button>
-                <button className='btn btn-block' >Edit</button>
-            </div>
-        );
-    }
-
     return (
         <Layout
-            title={`Next.js with Sequelize | Event Page - ${event.data &&
-                event.data.title}`}
+            title={`Next.js with Sequelize | Job Page - ${job.data &&
+                job.data.title}`}
             url={`${origin}${router.asPath}`}
             origin={origin}
         >
             <div className="container">
                 <main className="content-detail">
-                    {router.asPath === '/event/add' ? renderEventForm() : renderEventList()}
+                    {router.asPath === `/job/edit/${job.data.slug}` ? renderJobForm() : '/job'},
                 </main>
             </div>
         </Layout>
@@ -385,21 +284,21 @@ export async function getServerSideProps(context) {
     const token = getAppCookies(req).token || '';
     const baseApiUrl = `${origin}/api`;
 
-    let event = {};
+    let job = {};
 
     if (query.slug !== 'add') {
-        const eventApi = await fetch(`${baseApiUrl}/event/${query.slug}`);
-        event = await eventApi.json();
+        const jobApi = await fetch(`${baseApiUrl}/job/${query.slug}`);
+        job = await jobApi.json();
     }
 
     return {
         props: {
             origin,
             baseApiUrl,
-            event,
+            job,
             token,
         },
     };
 }
 
-export default Event;
+export default EditJob;

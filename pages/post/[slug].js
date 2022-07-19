@@ -131,7 +131,8 @@ function Post(props) {
             })
           } else {
             Swal.fire('Post Deleted!', '', 'success');
-            return (Router.back())
+            router.push({
+              pathname:`/post`})
           }
         });
       }
