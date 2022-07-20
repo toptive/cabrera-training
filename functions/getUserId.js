@@ -19,7 +19,7 @@ async function getUserId(slug, model) {
         })
     }
     if (model == 'events') {
-        userID = await models.posts.findAll({
+        userID = await models.events.findAll({
             where: {
                 id: slug,
             },

@@ -12,7 +12,7 @@ import { absoluteUrl, getAppCookies } from '../../middleware/utils';
 import Layout from '../../components/layout/Layout';
 import FormEvent from '../../components/form/FormEvent';
 
-/* post schemas */
+/* event schemas */
 const FORM_DATA_EVENT = {
     title: {
         value: '',
@@ -115,7 +115,6 @@ function Event(props) {
             });
 
             let result = await eventApi.json();
-            console.log(result);
             if (
                 result.status === 'success' &&
                 result.message &&
@@ -296,31 +295,32 @@ function Event(props) {
                     } else {
                         Swal.fire('Event Deleted!', '', 'success');
                         router.push({
-                            pathname:`/event`})
+                            pathname: `/event`
+                        })
                     }
                 });
             }
         })
     }
-    /* 
-      function editEvent() {
+
+    function editEvent() {
         Swal.fire({
-          title: 'Do you want to edit the event?',
-          confirmButtonColor: '#CACBCB',
-          showDenyButton: true,
-          //showCancelButton: true,
-          confirmButtonText: 'Edit',
-          denyButtonText: `Don't edit`,
+            title: 'Do you want to edit the event?',
+            confirmButtonColor: '#CACBCB',
+            showDenyButton: true,
+            //showCancelButton: true,
+            confirmButtonText: 'Edit',
+            denyButtonText: `Don't edit`,
         }).then((result) => {
-          // Read more about isConfirmed, isDenied below
-          if (result.isConfirmed) {
-            router.push({
-              pathname: `/event/edit/${event.data.slug}`
-            })
-          }
+            // Read more about isConfirmed, isDenied below
+            if (result.isConfirmed) {
+                router.push({
+                    pathname: `/event/edit/${event.data.slug}`
+                })
+            }
         })
-      }
-      */
+    }
+
 
     function renderEventList() {
         return (
@@ -356,7 +356,7 @@ function Event(props) {
                 <hr />
                 By: {event.data.user.firstName || ''} {event.data.user.lastName || ''}
                 <button className='btn btn-block' onClick={deleteEvent}>Delete</button>
-                <button className='btn btn-block' >Edit</button>
+                <button className='btn btn-block' onClick={editEvent}>Edit</button>
             </div>
         );
     }

@@ -21,7 +21,15 @@ function Event(props) {
     const { baseApiUrl } = props;
 
     //Define all events
-    let allEvents = () => events.data;
+    let allEvents = [];
+    allEvents = events.data.map((event) => {
+        return {
+            slug: event.slug,
+            title: event.title,
+            dateInit: new Date(Date.parse(event.dateInit)),
+            dateEnd: new Date(Date.parse(event.dateEnd))
+        }
+    });
 
     //Define my events
     let myEvents = [];
@@ -29,6 +37,7 @@ function Event(props) {
         myEvents = events.data.map((event) => {
             if (user.id === event.user.id && event.title) {
                 return {
+                    slug: event.slug,
                     title: event.title,
                     dateInit: new Date(Date.parse(event.dateInit)),
                     dateEnd: new Date(Date.parse(event.dateEnd))
@@ -49,6 +58,11 @@ function Event(props) {
         else { setSelectEvent(myEvents); }
     }
 
+    function clickEvent(e) {
+        router.push({
+            pathname: `/event/${e.slug}`
+        })
+    }
 
     return (
         <Layout
@@ -73,6 +87,7 @@ function Event(props) {
                 localizer={localizer}
                 defaultView='month'
                 events={selectEvent}
+                onSelectEvent={clickEvent}
                 startAccessor={"dateInit"}
                 endAccessor={"dateEnd"}
                 style={{ height: 440, width: 1200 }}

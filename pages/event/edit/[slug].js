@@ -10,20 +10,20 @@ import { absoluteUrl, getAppCookies } from "../../../middleware/utils";
 
 /* components */
 import Layout from "../../../components/layout/Layout";
-import FormEditJob from '../../../components/form/FormEditJob';
+import FormEditEvent from '../../../components/form/FormEditEvent';
 
 
 
-function EditJob(props) {
+function EditEvent(props) {
     const router = useRouter();
 
-    const { origin, job, token } = props;
+    const { origin, event, token } = props;
     const { baseApiUrl } = props;
 
-    /* post schemas */
-    const FORM_DATA_JOB = {
+    /* event schemas */
+    const FORM_DATA_EVENT = {
         title: {
-            value: job.data.title,
+            value: event.data.title,
             label: 'Title',
             min: 10,
             max: 36,
@@ -33,9 +33,9 @@ function EditJob(props) {
                 error: 'Please insert valid Title',
             },
         },
-        content: {
-            value: job.data.content,
-            label: 'Content',
+        description: {
+            value: event.data.description,
+            label: 'Description',
             min: 6,
             max: 1500,
             required: true,
@@ -44,33 +44,32 @@ function EditJob(props) {
                 error: 'Please insert valid Content',
             },
         },
-        reportManager: {
-            value: job.data.reportManager,
-            label: 'Content',
-            min: 6,
-            max: 1500,
-            required: true,
-            validator: {
-                regEx: /^[a-z\sA-Z0-9\W\w]+$/,
-                error: 'Please insert valid Report Manager',
-            },
-        },
-        dateLimit: {
-            value: job.data.dateLimit,
-            label: 'Date',
+        dateInit: {
+            value: event.data.dateInit,
+            label: 'Date Init',
             min: 6,
             max: 24,
             required: true,
             validator: {
                 regEx: /^[a-z\sA-Z0-9\W\w]+$/,
-                error: 'Please insert valid Date limit',
+                error: 'Please select a valid Date init',
+            },
+        },
+        dateEnd: {
+            value: event.data.dateEnd,
+            label: 'Date End',
+            min: 6,
+            max: 24,
+            required: true,
+            validator: {
+                regEx: /^[a-z\sA-Z0-9\W\w]+$/,
+                error: 'Please insert valid Date end',
             },
         },
     };
 
-
     const [loading, setLoading] = useState(false);
-    const [stateFormData, setStateFormData] = useState(FORM_DATA_JOB);
+    const [stateFormData, setStateFormData] = useState(FORM_DATA_EVENT);
     const [stateFormError, setStateFormError] = useState([]);
     const [stateFormMessage, setStateFormMessage] = useState({});
     const [stateFormValid, setStateFormValid] = useState(false);
@@ -82,21 +81,30 @@ function EditJob(props) {
 
         /* title */
         data = { ...data, title: data.title.value || '' };
-        /* content */
-        data = { ...data, content: data.content.value || '' };
-        /* reportManager */
-        data = { ...data, reportManager: data.reportManager.value || '' };
-        /* dateLimit */
-        data = { ...data, dateLimit: data.dateLimit.value || '' };
+        /* description */
+        data = { ...data, description: data.description.value || '' };
+        /* dateInit */
+        data = { ...data, dateInit: data.dateInit.value || '' };
+        /* dateEnd */
+        data = { ...data, dateEnd: data.dateEnd.value || '' };
 
         /* validation handler */
         const isValid = validationHandler(stateFormData);
+
+        if (data.dateEnd < data.dateInit) {
+            Swal.fire({
+                title: 'Date init must be less tha Date End',
+                confirmButtonColor: '#CACBCB',
+                confirmButtonText: 'Accept',
+            });
+            return;
+        }
 
         if (isValid) {
             // Call an external API endpoint to get posts.
             // You can use any data fetching library
             setLoading(!loading);
-            const jobApi = await fetch(`${baseApiUrl}/job/${job.data.id}`, {
+            const eventApi = await fetch(`${baseApiUrl}/event/${event.data.id}`, {
                 method: 'PUT',
                 headers: {
                     Accept: 'application/json',
@@ -105,16 +113,16 @@ function EditJob(props) {
                 },
                 body: JSON.stringify(data)
             });
-            const result = await jobApi.json();
+            const result = await eventApi.json();
 
             if (result.message == 'success') {
-                Swal.fire('Job Edited!', '', 'success');
+                Swal.fire('Event Edited!', '', 'success');
                 router.push({
-                    pathname: '/job',
+                    pathname: '/event',
                 });
             } else {
                 Swal.fire({
-                    title: 'Only the user can edit the job',
+                    title: 'Only the user can edit the event',
                     icon: 'info',
                     confirmButtonColor: '#CACBCB',
                     confirmButtonText: 'OK',
@@ -237,17 +245,17 @@ function EditJob(props) {
         return isValid;
     }
 
-    function renderJobForm() {
+    function renderEventForm() {
         return (
             <>
                 <Link
                     href={{
-                        pathname: `/job/${job.data.slug}`,
+                        pathname: `/event/${event.data.slug}`,
                     }}
                 >
                     <a>&larr; Back</a>
                 </Link>
-                <FormEditJob
+                <FormEditEvent
                     onSubmit={onSubmitHandler}
                     onChange={onChangeHandler}
                     loading={loading}
@@ -262,14 +270,14 @@ function EditJob(props) {
 
     return (
         <Layout
-            title={`Next.js with Sequelize | Job Page - ${job.data &&
-                job.data.title}`}
+            title={`Next.js with Sequelize | Job Page - ${event.data &&
+                event.data.title}`}
             url={`${origin}${router.asPath}`}
             origin={origin}
         >
             <div className="container">
                 <main className="content-detail">
-                    {router.asPath === `/job/edit/${job.data.slug}` ? renderJobForm() : '/job'},
+                    {router.asPath === `/event/edit/${event.data.slug}` ? renderEventForm() : '/event'},
                 </main>
             </div>
         </Layout>
@@ -284,21 +292,21 @@ export async function getServerSideProps(context) {
     const token = getAppCookies(req).token || '';
     const baseApiUrl = `${origin}/api`;
 
-    let job = {};
+    let event = {};
 
     if (query.slug !== 'add') {
-        const jobApi = await fetch(`${baseApiUrl}/job/${query.slug}`);
-        job = await jobApi.json();
+        const eventApi = await fetch(`${baseApiUrl}/event/${query.slug}`);
+        event = await eventApi.json();
     }
 
     return {
         props: {
             origin,
             baseApiUrl,
-            job,
+            event,
             token,
         },
     };
 }
 
-export default EditJob;
+export default EditEvent;
