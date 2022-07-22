@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       phoneNumber: DataTypes.STRING,
       gender: DataTypes.STRING,
       status: DataTypes.BOOLEAN,
+      googleUser: DataTypes.STRING,
     },
     {
       hooks: {

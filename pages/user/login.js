@@ -3,10 +3,12 @@ import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
 
+
 /* utils */
 import { absoluteUrl } from '../../middleware/utils';
 
 /* components */
+
 import Layout from '../../components/layout/Layout';
 import FormLogin from '../../components/form/FormLogin';
 
@@ -229,7 +231,7 @@ function Login(props) {
           />
         </main>
       </div>
-    </Layout>
+    </Layout >
   );
 }
 
