@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
+import GoogleLogin from 'react-google-login';
 
 
 /* utils */
@@ -13,7 +14,7 @@ import Layout from '../../components/layout/Layout';
 import FormLogin from '../../components/form/FormLogin';
 
 const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,2|3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
+var googleID = "548956767554-uj5ngsul65c0gv8nm8g8sg4d62jo42mc.apps.googleusercontent.com";
 /* login schemas */
 const FORM_DATA_LOGIN = {
   email: {
@@ -40,6 +41,35 @@ const FORM_DATA_LOGIN = {
   },
 };
 
+const LOGIN_WITH_GOOGLE = {
+  firstName: {
+    value: '',
+    label: 'FirstName',
+    min: 10,
+    max: 36,
+    required: true,
+  },
+  lastName: {
+    value: '',
+    label: 'LastName',
+    min: 10,
+    max: 36,
+    required: true,
+  },
+  email: {
+    value: '',
+    label: 'Email',
+    min: 10,
+    max: 36,
+    required: true,
+  },
+  googleId: {
+    value: '',
+    label: 'Google User',
+    required: true,
+  },
+};
+
 function Login(props) {
   const router = useRouter();
 
@@ -47,9 +77,41 @@ function Login(props) {
   const [loading, setLoading] = useState(false);
 
   const [stateFormData, setStateFormData] = useState(FORM_DATA_LOGIN);
+  const [stateGoogleForm, setStateGoogleForm] = useState(LOGIN_WITH_GOOGLE);
   const [stateFormError, setStateFormError] = useState([]);
   const [stateFormValid, setStateFormValid] = useState(false);
   const [stateFormMessage, setStateFormMessage] = useState({});
+
+  const responseLoginGoogle = async response => {
+
+    let data = { ...stateGoogleForm };
+    data = { ...data, firstName: response.profileObj.givenName };
+    data = { ...data, lastName: response.profileObj.familyName };
+    data = { ...data, email: response.profileObj.email };
+    data = { ...data, googleId: response.profileObj.googleId };
+
+    const loginWithGoogle = await fetch(`${baseApiUrl}/auth/authWithGoogle`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+
+      body: JSON.stringify(data),
+
+    }).catch(error => {
+      console.error('Error:', error);
+    });
+    let result = await loginWithGoogle.json();
+    if (result.success) {
+      Cookies.set('token', response.tokenObj.access_token);
+      Router.push('/');
+    } else {
+      setStateFormMessage(result);
+    }
+    document.getElementById('googleLogin').hidden = true;
+
+  };
 
   function onChangeHandler(e) {
     const { name, value } = e.currentTarget;
@@ -229,11 +291,18 @@ function Login(props) {
               stateFormMessage,
             }}
           />
+          <GoogleLogin
+            clientId="548956767554-uj5ngsul65c0gv8nm8g8sg4d62jo42mc.apps.googleusercontent.com"
+            buttonText="Login With Google"
+            onSuccess={responseLoginGoogle}
+            //onFailure={ }
+            cookiePolicy={'single_host_origin'}
+          />
         </main>
       </div>
     </Layout >
   );
-}
+};
 
 /* getServerSideProps */
 export async function getServerSideProps(context) {
