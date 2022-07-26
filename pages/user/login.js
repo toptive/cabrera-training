@@ -103,14 +103,12 @@ function Login(props) {
       console.error('Error:', error);
     });
     let result = await loginWithGoogle.json();
-    if (result.success) {
-      Cookies.set('token', response.tokenObj.access_token);
+    if (result.success && result.token) {
+      Cookies.set('token', result.token);
       Router.push('/');
     } else {
       setStateFormMessage(result);
     }
-    document.getElementById('googleLogin').hidden = true;
-
   };
 
   function onChangeHandler(e) {
