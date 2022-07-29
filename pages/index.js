@@ -58,6 +58,13 @@ export default function Home(props) {
                 <p>Events collection from users of this web application.</p>
               </a>
             </Link>
+
+            <Link href="/wallet">
+              <a className="card">
+                <h3>My Wallet &rarr;</h3>
+                <p>See my credit for add events and recharge.</p>
+              </a>
+            </Link>
           </div>
         </main>
       </div>
