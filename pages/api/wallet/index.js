@@ -1,7 +1,9 @@
 import nextConnect from 'next-connect';
 const models = require('../../../db/models/index');
+import middleware from '../../../middleware/auth';
 
 const handler = nextConnect()
+  .use(middleware)
   // Get method
   .get(async (req, res) => {
     const {
@@ -27,7 +29,7 @@ const handler = nextConnect()
       offset: nextPage ? +nextPage : 0,
       limit: 5,
     });
-
+    
     res.statusCode = 200;
     res.json({
       status: 'success',

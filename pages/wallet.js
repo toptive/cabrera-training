@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
 
@@ -10,8 +10,28 @@ import Layout from '../components/layout/Layout';
 import UserNav from '../components/navigation/User';
 
 function Wallet(props) {
+
   const router = useRouter();
   const { origin, user, wallets } = props;
+
+  useEffect(() => {
+    if (user === undefined) {
+      router.push({
+        pathname: '/user/login'
+      })
+    }
+  }, []);
+
+  //Define my balance
+  let myBalance = 0;
+  if (user !== undefined) {
+    myBalance = wallets.data.map((wallet) => {
+      if (user.id === wallet.user.id) {
+        myBalance = wallet.balance;
+        return myBalance;
+      }
+    })
+  }
 
   return (
     <Layout
@@ -46,6 +66,10 @@ function Wallet(props) {
               <Link href="/wallet/add">
                 <a>+ Add balance</a>
               </Link>
+              <div className='card'>
+                <h2>My balance</h2>
+                <h1>{`U$D ${myBalance}`}</h1>
+              </div>
             </small>
           </div>
         </main>

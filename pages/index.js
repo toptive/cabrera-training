@@ -8,6 +8,7 @@ import Layout from '../components/layout/Layout';
 import UserNav from '../components/navigation/User';
 
 export default function Home(props) {
+
   const { user, origin } = props;
   return (
     <Layout
