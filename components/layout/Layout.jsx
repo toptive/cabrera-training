@@ -221,6 +221,9 @@ export default function Layout({
           background-attachment: scroll;
         }
 
+        .card-credit {
+          width: 250px;
+        }
         .navbar {
           position: relative;
           display: flex;

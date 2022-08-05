@@ -1,49 +1,93 @@
+import React, { useState } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+    Elements,
+    CardElement,
+    useStripe,
+    useElements,
+} from "@stripe/react-stripe-js";
 
-function FormAddBalance(props) {
-    const {
-        onSubmitHandler,
-        onChange,
-        loading,
-        stateFormData,
-        stateFormError,
-        stateFormValid,
-        stateFormMessage,
-    } = props;
+
+const stripePromise = loadStripe("pk_test_51LPzykKGk6FuEVPskx85EdzUmahSrCXu7F21yDZEQYlkLZ6akfq76K9u8Veyk1rUgc5ZsPj3hT2T4yshnU3xFJPn00ZuebwzFS");
+
+const CheckoutForm = (props) => {
+
+    const { amount } = props;
+
+    const stripe = useStripe();
+    const elements = useElements();
+
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        console.log(amount); return;
+
+        const { error, paymentMethod } = await stripe.createPaymentMethod({
+            type: "card",
+            card: elements.getElement(CardElement),
+        });
+        setLoading(true);
+
+        if (!error) {
+            // console.log(paymentMethod)
+            const { id } = paymentMethod;
+            try {
+                const { data } = await axios.post(
+                    "http://localhost:3001/api/checkout",
+                    {
+                        id,
+                        amount, //cents
+                    }
+                );
+                console.log(data);
+
+                elements.getElement(CardElement).clear();
+            } catch (error) {
+                console.log(error);
+            }
+            setLoading(false);
+        }
+    };
+
 
     return (
-        <form className="form-login card" method="POST" onSubmit={onSubmitHandler}>
-            <div className="form-group">
-                <h2>Add balance</h2>
+        <form className="form-post" onSubmit={handleSubmit}>
+            {/* User Card Input */}
+            <div className="card-credit">
+                <CardElement />
                 <hr />
-                {stateFormMessage.status === 'error' && (
-                    <h4 className="warning text-center">{stateFormMessage.error}</h4>
+                <br />
+            </div>
+
+            <button disabled={!stripe} className="btn btn-block btn-warning">
+                {loading ? (
+                    <div className="spinner-border text-light" role="status">
+                        <span className="sr-only">Loading...</span>
+                    </div>
+                ) : (
+                    "Charge"
                 )}
-            </div>
-            <div className="form-group">
-                <label htmlFor="balance">Title</label>
-                <input
-                    className="form-control"
-                    type="text"
-                    id="balance"
-                    name="balance"
-                    placeholder="Please type the balance can be 50 100 500"
-                    onChange={onChange}
-                    value={stateFormData.balance.value}
-                />
-                {stateFormError.balance && (
-                    <span className="warning">{stateFormError.balance.hint}</span>
-                )}
-            </div>
-            <div>
-                <button
-                    type="submit"
-                    className="btn btn-block btn-warning"
-                    disabled={loading}
-                >
-                    {!loading ? 'Login' : 'Loading...'}
-                </button>
-            </div>
+            </button>
         </form>
     );
+};
+
+function AddBalance(props) {
+    //const { amount } = props;
+    //console.log(props.amount);
+    return (
+        <Elements stripe={stripePromise}>
+            <div className="card">
+                <div className="row h-100">
+                    <div className="col-md-4 offset-md-4 h-100">
+                        <CheckoutForm amount={props.amount} />
+                    </div>
+                </div>
+            </div>
+        </Elements>
+    );
 }
-export default FormAddBalance;
+
+export default AddBalance;

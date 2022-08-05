@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
+
 /* utils */
 import { absoluteUrl, getAppCookies } from '../../middleware/utils';
 
 /* components */
 import Layout from '../../components/layout/Layout';
-import FormAddBalance from '../../components/form/FormAddBalance';
+import AddBalance from '../../components/form/FormAddBalance';
+
 
 /* wallet schemas */
 const FORM_DATA_WALLET = {
@@ -38,7 +40,7 @@ function Wallet(props) {
 
     async function onSubmitHandler(e) {
         e.preventDefault();
-
+        console.log("holaa");
         let data = { ...stateFormData };
 
         /* balance */
@@ -71,21 +73,6 @@ function Wallet(props) {
             }
             setLoading(false);
         }
-    }
-
-    function onChangeHandler(e) {
-        const { name, value } = e.currentTarget;
-
-        setStateFormData({
-            ...stateFormData,
-            [name]: {
-                ...stateFormData[name],
-                value,
-            },
-        });
-
-        /* validation handler */
-        validationHandler(stateFormData, e);
     }
 
     function validationHandler(states, e) {
@@ -204,6 +191,16 @@ function Wallet(props) {
         );
     }
 
+    const [selectBalance, setSelectBalance] = useState(0);
+
+    function onChangeHandler(e) {
+        let select = e.target.value;
+        if (select == '0') { setSelectBalance(0); }
+        if (select == '50') { setSelectBalance(50); }
+        if (select == '100') { setSelectBalance(100); }
+        if (select == '500') { setSelectBalance(500); }
+    }
+
     function renderWalletForm() {
         return (
             <>
@@ -214,15 +211,22 @@ function Wallet(props) {
                 >
                     <a>&larr; Back</a>
                 </Link>
-                <FormAddBalance
-                    onSubmit={onSubmitHandler}
-                    onChange={onChangeHandler}
-                    loading={loading}
-                    stateFormData={stateFormData}
-                    stateFormError={stateFormError}
-                    stateFormValid={stateFormValid}
-                    stateFormMessage={stateFormMessage}
-                />
+                <form className="form-post card">
+                    <div className="form-group">
+                        <h2>Form Add Balance</h2>
+                        <hr />
+                        <label htmlFor="balance">Balance</label>
+                        <select name="balance" className="form-control" id="balance" onChange={(e) => onChangeHandler(e)}>
+                            <option value="0">Select a mount.....</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="500">500</option>
+                        </select>
+                    </div>
+                    <AddBalance
+                        amount={selectBalance}
+                    />
+                </form>
             </>
         );
     }
