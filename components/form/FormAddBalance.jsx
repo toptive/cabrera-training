@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import Swal from "sweetalert2";
 import {
     Elements,
     CardElement,
@@ -22,35 +23,42 @@ const CheckoutForm = (props) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log(amount); return;
+        if (amount != 0) {
+            const { error, paymentMethod } = await stripe.createPaymentMethod({
+                type: "card",
+                card: elements.getElement(CardElement),
+            });
+            setLoading(true);
 
-        const { error, paymentMethod } = await stripe.createPaymentMethod({
-            type: "card",
-            card: elements.getElement(CardElement),
-        });
-        setLoading(true);
+            if (!error) {
+                // console.log(paymentMethod)
+                const { id } = paymentMethod;
+                const body = { id, amount: amount * 100 };
+                try {
+                    const stripeApi = await fetch(`http://localhost:3000/api/wallet/[slug]`, {
+                        method: 'POST',
+                        headers: {
+                            Accept: 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(body),
+                    });
 
-        if (!error) {
-            // console.log(paymentMethod)
-            const { id } = paymentMethod;
-            try {
-                const { data } = await axios.post(
-                    "http://localhost:3001/api/checkout",
-                    {
-                        id,
-                        amount, //cents
-                    }
-                );
-                console.log(data);
-
-                elements.getElement(CardElement).clear();
-            } catch (error) {
-                console.log(error);
+                    elements.getElement(CardElement).clear();
+                } catch (error) {
+                    console.log(error);
+                }
+                setLoading(false);
             }
-            setLoading(false);
+        } else {
+            Swal.fire({
+                title: 'You must select a value to load...',
+                confirmButtonColor: '#CACBCB',
+                confirmButtonText: 'OK',
+            });
         }
-    };
 
+    };
 
     return (
         <form className="form-post" onSubmit={handleSubmit}>
