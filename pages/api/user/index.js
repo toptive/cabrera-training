@@ -1,4 +1,5 @@
 import nextConnect from 'next-connect';
+import { sequelize } from '../../../db/models/index';
 const models = require('../../../db/models/index');
 import middleware from '../../../middleware/auth';
 
@@ -46,16 +47,26 @@ const handler = nextConnect()
     const { slug } = req.query;
     const { username, email, password } = body;
     const userId = slug;
+
     const newUser = await models.users.create({
       username,
       email,
       password,
       status: 1,
     });
+    const { QueryTypes } = require('sequelize');
+    const maxId = await sequelize.query("SELECT MAX(id) as 'id' from `users`", { type: QueryTypes.SELECT });
+    const newUserTransactions = await models.transactions.create({
+      userId: maxId[0].id,
+      balance: 0,
+      status: 1,
+    });
+
     return res.status(200).json({
       status: 'success',
       message: 'done',
       data: newUser,
+      transaction: newUserTransactions
     });
   })
   // Put method

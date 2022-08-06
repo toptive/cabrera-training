@@ -13,7 +13,7 @@ const stripePromise = loadStripe("pk_test_51LPzykKGk6FuEVPskx85EdzUmahSrCXu7F21y
 
 const CheckoutForm = (props) => {
 
-    const { amount } = props;
+    const { amount, user } = props;
 
     const stripe = useStripe();
     const elements = useElements();
@@ -35,7 +35,7 @@ const CheckoutForm = (props) => {
                 const { id } = paymentMethod;
                 const body = { id, amount: amount * 100 };
                 try {
-                    const stripeApi = await fetch(`http://localhost:3000/api/wallet/[slug]`, {
+                    const stripeApi = await fetch(`http://localhost:3000/api/wallet/stripe/[slug]`, {
                         method: 'POST',
                         headers: {
                             Accept: 'application/json',
@@ -57,6 +57,8 @@ const CheckoutForm = (props) => {
                 confirmButtonText: 'OK',
             });
         }
+        /* fetch endpoint to store data in DB*/
+
 
     };
 
@@ -83,14 +85,12 @@ const CheckoutForm = (props) => {
 };
 
 function AddBalance(props) {
-    //const { amount } = props;
-    //console.log(props.amount);
     return (
         <Elements stripe={stripePromise}>
             <div className="card">
                 <div className="row h-100">
                     <div className="col-md-4 offset-md-4 h-100">
-                        <CheckoutForm amount={props.amount} />
+                        <CheckoutForm amount={props.amount} user={props.user}/>
                     </div>
                 </div>
             </div>

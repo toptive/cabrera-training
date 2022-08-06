@@ -29,7 +29,7 @@ const FORM_DATA_WALLET = {
 function Wallet(props) {
     const router = useRouter();
 
-    const { origin, wallet, token } = props;
+    const { origin, wallet, user, token } = props;
     const { baseApiUrl } = props;
 
     const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ function Wallet(props) {
 
     async function onSubmitHandler(e) {
         e.preventDefault();
-        console.log("holaa");
+
         let data = { ...stateFormData };
 
         /* balance */
@@ -225,6 +225,7 @@ function Wallet(props) {
                     </div>
                     <AddBalance
                         amount={selectBalance}
+                        user={user}
                     />
                 </form>
             </>
