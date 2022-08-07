@@ -68,7 +68,7 @@ function Wallet(props) {
               </Link>
               <div className='card'>
                 <h2>My balance</h2>
-                <h1>{`U$D ${myBalance}`}</h1>
+                <h1>{`U$D `}{myBalance}</h1>
               </div>
             </small>
           </div>

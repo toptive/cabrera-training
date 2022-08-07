@@ -23,6 +23,7 @@ const CheckoutForm = (props) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const userId = user.id;
         if (amount != 0) {
             const { error, paymentMethod } = await stripe.createPaymentMethod({
                 type: "card",
@@ -30,8 +31,24 @@ const CheckoutForm = (props) => {
             });
             setLoading(true);
 
+            try {
+
+                const body = { userId, amount };
+                const transactionApi = await fetch(`http://localhost:3000/api/wallet/addBalance/[slug]`, {
+                    method: 'PUT',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(body),
+                });
+
+                elements.getElement(CardElement).clear();
+            } catch (error) {
+                console.log(error);
+            }
+
             if (!error) {
-                // console.log(paymentMethod)
                 const { id } = paymentMethod;
                 const body = { id, amount: amount * 100 };
                 try {
@@ -48,6 +65,11 @@ const CheckoutForm = (props) => {
                 } catch (error) {
                     console.log(error);
                 }
+                Swal.fire({
+                    title: 'Recharge balance successful!!!',
+                    confirmButtonColor: '#CACBCB',
+                    confirmButtonText: 'OK',
+                });
                 setLoading(false);
             }
         } else {
@@ -57,9 +79,6 @@ const CheckoutForm = (props) => {
                 confirmButtonText: 'OK',
             });
         }
-        /* fetch endpoint to store data in DB*/
-
-
     };
 
     return (
@@ -90,7 +109,7 @@ function AddBalance(props) {
             <div className="card">
                 <div className="row h-100">
                     <div className="col-md-4 offset-md-4 h-100">
-                        <CheckoutForm amount={props.amount} user={props.user}/>
+                        <CheckoutForm amount={props.amount} user={props.user} />
                     </div>
                 </div>
             </div>
