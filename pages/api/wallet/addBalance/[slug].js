@@ -18,7 +18,7 @@ const handler = nextConnect()
     const user = req.body.userId;
     const amount = req.body.amount;
     const amountEdit = await models.transactions.update({
-      balance: Sequelize.literal(`balance + ${amount}`),
+      balance: Sequelize.literal(`balance + (${amount})`),
     }, {
       where: {
         userId: user

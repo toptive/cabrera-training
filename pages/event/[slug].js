@@ -63,7 +63,7 @@ const FORM_DATA_EVENT = {
 function Event(props) {
     const router = useRouter();
 
-    const { origin, event, token } = props;
+    const { origin, event, wallets, token, user } = props;
 
     const { baseApiUrl } = props;
     const [loading, setLoading] = useState(false);
@@ -72,6 +72,14 @@ function Event(props) {
     const [stateFormError, setStateFormError] = useState([]);
     const [stateFormMessage, setStateFormMessage] = useState({});
     const [stateFormValid, setStateFormValid] = useState(false);
+
+    let myBalance = 0;
+    myBalance = wallets.data.map((wallet) => {
+        if (user.id === wallet.user.id) {
+            myBalance = wallet.balance;
+            return myBalance;
+        }
+    })
 
     async function onSubmitHandler(e) {
         e.preventDefault();
@@ -99,6 +107,15 @@ function Event(props) {
             return;
         }
 
+        if (myBalance.join('') < 15) {
+            Swal.fire({
+                title: 'Your balance is not enough to create an event. Please top up your balance.',
+                confirmButtonColor: '#CACBCB',
+                confirmButtonText: 'Accept',
+            });
+            return;
+        }
+
         if (isValid) {
             // Call an external API endpoint to get posts.
             // You can use any data fetching library
@@ -112,6 +129,18 @@ function Event(props) {
                 },
                 body: JSON.stringify(data),
 
+            });
+            const amount = -15;
+            const userId = user.id;
+
+            const body = { userId, amount };
+            const transactionApi = await fetch(`http://localhost:3000/api/wallet/addBalance/[slug]`, {
+                method: 'PUT',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
             });
 
             let result = await eventApi.json();
@@ -254,6 +283,17 @@ function Event(props) {
                 >
                     <a>&larr; Back</a>
                 </Link>
+                <small
+                    style={{
+                        textAlign: 'center',
+                        marginTop: '0rem',
+                        marginBottom: '1rem',
+                    }}>
+                    <div>
+                        <h3>My balance</h3>
+                        <h2>{`U$D `}{myBalance}</h2>
+                    </div>
+                </small>
                 <FormEvent
                     onSubmit={onSubmitHandler}
                     onChange={onChangeHandler}
@@ -381,9 +421,11 @@ function Event(props) {
 export async function getServerSideProps(context) {
     const { query, req } = context;
     const { origin } = absoluteUrl(req);
+    const { nextPage } = query;
 
     const token = getAppCookies(req).token || '';
     const baseApiUrl = `${origin}/api`;
+    const nextPageUrl = !isNaN(nextPage) ? `?nextPage=${nextPage}` : '';
 
     let event = {};
 
@@ -392,11 +434,20 @@ export async function getServerSideProps(context) {
         event = await eventApi.json();
     }
 
+    const walletsApi = await fetch(`${baseApiUrl}/wallet${nextPageUrl}`, {
+        headers: {
+            authorization: token || '',
+        },
+    });
+
+    const wallets = await walletsApi.json();
+
     return {
         props: {
             origin,
             baseApiUrl,
             event,
+            wallets,
             token,
         },
     };
